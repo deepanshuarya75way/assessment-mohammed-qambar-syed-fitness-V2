@@ -12,6 +12,7 @@ import {
   Info,
   Award,
 } from "lucide-react";
+import {RecoveryWidget} from "@/components/RecoveryWidget"
 
 export const JournalSection = () => {
   const [activeTab, setActiveTab] = useState<"calories" | "scan">("calories");
@@ -97,6 +98,7 @@ export const JournalSection = () => {
   };
 
   return (
+    
     <div className="space-y-12">
       <div className="flex gap-8 border-b border-[var(--border-card)] pb-4">
         <button
@@ -388,6 +390,7 @@ export const JournalSection = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      <RecoveryWidget />
     </div>
   );
 };

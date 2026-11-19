@@ -359,6 +359,10 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
 
     const durationSeconds = Math.round((Date.now() - sessionStartedAt.current)/1000);
 
+    const completedReps = stateRef.current.setCount * targetReps+ stateRef.current.repCount;
+
+    const volume = completedReps;
+
     try{
       const response = await fetch("/api/journal/log",{
         method : "POST",
@@ -374,6 +378,7 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
           attemptedReps,
           formAccuracy,
           durationSeconds,
+          volume
         }),
       });
       if(!response.ok){
