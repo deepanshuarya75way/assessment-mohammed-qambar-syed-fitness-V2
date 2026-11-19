@@ -272,6 +272,12 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
   const poseRef = useRef<any>(null);
   const angleHistoryRef = useRef<number[]>([]);
   const lastSpokenRef = useRef<number>(0);
+  const finishedRef = useRef(false);
+  const sessionStartedAt = useRef(Date.now());
+  const formStatsRef = useRef({
+    attemptedReps : 0,
+    goodReps: 0 ,
+  });
   
   // Logic state refs to avoid stale closures in onResults
   const stateRef = useRef({
@@ -344,6 +350,45 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
     return () => clearInterval(interval);
   }, [isRestingState]);
 
+  const saveWorkout = async() =>{
+    if(finishedRef.current) return;
+    finishedRef.current = true;
+    setFeedback("Saving workout");
+    const{attemptedReps, goodReps} = formStatsRef.current;
+    const formAccuracy = attemptedReps ? Math.round((goodReps / attemptedReps) * 100) : 0 ;
+
+    const durationSeconds = Math.round((Date.now() - sessionStartedAt.current)/1000);
+
+    try{
+      const response = await fetch("/api/journal/log",{
+        method : "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }, 
+        body: JSON.stringify({
+          type: "workout",
+          exerciseName: exercise.name,
+          completedReps: stateRef.current.setCount*targetReps + stateRef.current.repCount, completedSets: targetSets,
+          targetReps,
+          targetSets,
+          attemptedReps,
+          formAccuracy,
+          durationSeconds,
+        }),
+      });
+      if(!response.ok){
+        throw new Error("Could not save Workout");
+      }
+      setFeedback("Workout Saved!");}
+      catch(error){
+        console.error("WOrkout save error:", error);
+        setFeedback("WOrkout completed but journal save failed");
+        
+    }finally{
+      setTimeout(onComplete, 1200);
+    }
+  }
+
   useEffect(() => {
     const initML = async () => {
       if (typeof window === "undefined" || poseRef.current) return;
@@ -383,12 +428,20 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
             const config = getExerciseConfig(exName);
 
             // 2. Resolve active side based on visibility
-            const leftVisibility = (lm[11]?.visibility || 0) + (lm[13]?.visibility || 0) + (lm[15]?.visibility || 0);
-            const rightVisibility = (lm[12]?.visibility || 0) + (lm[14]?.visibility || 0) + (lm[16]?.visibility || 0);
+            const getVisibility = (indices: number[]) => indices.reduce((sum , i) => sum + (lm[i]?.visibility ?? 0), 0);
+            const leftVisibility = getVisibility(config.joints.left);
+            const rightVisibility = getVisibility(config.joints.right);
             const side: "left" | "right" = leftVisibility > rightVisibility ? "left" : "right";
 
             // 3. Compute and smooth angle
             const jointIndices = config.joints[side];
+            const jointsVisibilty = jointIndices.every((i) => (lm[i]?.visibility ?? 0) >= 0.5);
+            if(!joinstVisible){
+              setFeedback("Move into the camera view ");
+              canvasCtx.restore();
+              return;
+            }
+
             const rawAngle = calculateAngle(lm[jointIndices[0]], lm[jointIndices[1]], lm[jointIndices[2]]);
             const smoothedAngle = getSmoothedAngle(rawAngle);
 
@@ -457,10 +510,19 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
               } else if (stateRef.current.repState === "RETURNING") {
                 if (smoothedAngle > startThresh - 10) {
                   if (now - stateRef.current.lastRepTime > 800) {
-                    stateRef.current.repCount += 1;
                     stateRef.current.lastRepTime = now;
-                    setUiRepCount(stateRef.current.repCount);
+                    formStatsRef.current.attemptedReps +=1;
+                    if(isPostureCorrect){
+                      formStatsRef.current.goodReps +=1;
+                      stateRef.current.repCount += 1;
+                      setUiRepCount(stateRef.current.repCount);
                     speakFeedback(String(stateRef.current.repCount));
+                    }
+                    else{
+                      speakThrottled("Rep not COunted. Correct your posture. ");
+                    }
+                    
+                    
                   }
                   stateRef.current.repState = "START";
                 }
@@ -510,19 +572,21 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
             setFeedback(currentFeedback);
 
             // Handle set completion
-            if (stateRef.current.repCount >= targetReps) {
+            if (stateRef.current.repCount >= targetReps && !finishedRef.current) {
               const nextSet = stateRef.current.setCount + 1;
               if (nextSet >= targetSets) {
                 setFeedback("Session Complete");
                 speakFeedback("Excellent work! Session complete.");
-                setTimeout(onComplete, 2000);
-              } else {
+                void saveWorkout();}else{
                 stateRef.current.setCount = nextSet;
+                 
                 stateRef.current.repCount = 0;
                 setUiSetCount(nextSet);
                 setUiRepCount(0);
                 setIsRestingState(true);
-              }
+                }
+                setTimeout(onComplete, 2000);
+              
             }
           } else {
             setFeedback("Step into frame...");
