@@ -1,0 +1,453 @@
+@import "tailwindcss";
+
+@theme {
+  /* High-Definition Palette */
+  --color-onyx: #020202;
+  --color-void: #000000;
+  --color-gold-leaf: #D4AF37;
+  --color-mercury: #E5E5E5;
+  --color-emerald-glow: #10B981;
+  --color-soft-peach: #F5E6DA;
+  --color-jet-black: #0A0A0A;
+  --color-deep-red: #C0392B;
+
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --ease-ultra: cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+/* ── Theme CSS Variables ─────────────────────────────────────────────────── */
+
+:root {
+  /* Dark mode (default) */
+  --bg-page:     #020202;
+  --fg-page:     #E5E5E5;
+  --bg-card:     rgba(255, 255, 255, 0.03);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --fg-muted:    rgba(255, 255, 255, 0.25);
+  --fg-submuted: rgba(255, 255, 255, 0.1);
+  --bg-input:    rgba(255, 255, 255, 0.02);
+  --border-input: rgba(255, 255, 255, 0.06);
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+:root.light {
+  /* Light mode — warm ivory luxury */
+  --bg-page:     #F3EDE3;
+  --fg-page:     #1C1C1C;
+  --bg-card:     rgba(255, 255, 255, 0.82);
+  --border-card: rgba(0, 0, 0, 0.07);
+  --fg-muted:    rgba(0, 0, 0, 0.45);
+  --fg-submuted: rgba(0, 0, 0, 0.2);
+  --bg-input:    rgba(0, 0, 0, 0.03);
+  --border-input: rgba(0, 0, 0, 0.09);
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
+body {
+  background-color: var(--bg-page);
+  color: var(--fg-page);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+@media (min-width: 769px) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+/* ── Mobile View: Complete Cursor Elimination ────────────────────────── */
+@media (max-width: 768px), (pointer: coarse), (hover: none) {
+  body,
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  .btn-kinetic,
+  .btn-magnetic,
+  .theme-toggle-btn {
+    cursor: auto !important;
+  }
+
+  .custom-cursor-element,
+  [data-custom-cursor] {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ── Light-mode overrides for common Tailwind color utilities ────────────── */
+
+:root.light .bg-onyx,
+:root.light .bg-void {
+  background-color: var(--bg-page) !important;
+}
+
+:root.light .text-mercury {
+  color: var(--fg-page) !important;
+}
+
+/* Headings that use text-white */
+:root.light h1,
+:root.light h2,
+:root.light h3 {
+  color: #0A0A0A !important;
+}
+
+/* Muted/ghost text */
+:root.light .text-white\/20 { color: var(--fg-muted) !important; }
+:root.light .text-white\/30 { color: var(--fg-muted) !important; }
+:root.light .text-white\/40 { color: var(--fg-muted) !important; }
+:root.light .text-white\/10 { color: var(--fg-submuted) !important; }
+
+/* Borders */
+:root.light .border-white\/5  { border-color: var(--border-card) !important; }
+:root.light .border-white\/10 { border-color: var(--border-card) !important; }
+:root.light .border-white\/20 { border-color: rgba(0,0,0,0.12) !important; }
+
+/* Body text that should darken */
+:root.light .text-white {
+  color: var(--fg-page);
+}
+
+/* Explicit white text on dark buttons — preserve */
+:root.light .text-void { color: #000 !important; }
+
+/* ── Light Mode Navigation, Logo & Contrast Hardening ───────────────────── */
+
+:root.light header,
+:root.light nav {
+  mix-blend-mode: normal !important;
+}
+
+:root.light header a,
+:root.light nav a {
+  color: #111111 !important;
+  font-weight: 600;
+}
+
+:root.light header a:hover,
+:root.light nav a:hover {
+  color: var(--color-gold-leaf) !important;
+}
+
+:root.light .mix-blend-difference,
+:root.light .mix-blend-overlay {
+  mix-blend-mode: normal !important;
+}
+
+:root.light .logo-svora,
+:root.light nav a span.logo-svora,
+:root.light nav span.font-serif,
+:root.light footer span.font-serif,
+:root.light .text-logo {
+  color: #000000 !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+}
+
+:root.light nav a:hover .logo-svora,
+:root.light nav a:hover span.font-serif {
+  color: var(--color-gold-leaf) !important;
+}
+
+:root.light nav a {
+  color: #111111 !important;
+  font-weight: 600;
+}
+
+:root.light nav a:hover {
+  color: var(--color-gold-leaf) !important;
+}
+
+/* ── Light Mode Image & Card Darkening ───────────────────────────────────── */
+
+:root.light .somatic-image-card {
+  background-color: #0C0C0C !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root.light .somatic-image-layer {
+  opacity: 0.9 !important;
+  filter: grayscale(100%) contrast(1.25) brightness(0.82) !important;
+}
+
+:root.light .somatic-gradient-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%) !important;
+  opacity: 0.8 !important;
+}
+
+:root.light .somatic-image-card .text-\[var\(--fg-muted\)\] {
+  color: rgba(255, 255, 255, 0.85) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+:root.light .somatic-image-card .text-\[var\(--fg-page\)\] {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+:root.light .somatic-image-card svg text {
+  fill: #FFFFFF !important;
+}
+
+:root.light img,
+:root.light .preview-image {
+  opacity: 0.95 !important;
+  filter: contrast(1.15) brightness(0.88) !important;
+}
+
+/* ── Blueprint Grid ──────────────────────────────────────────────────────── */
+
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+}
+
+:root.light .blueprint-grid {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
+
+/* ── Light Leak ──────────────────────────────────────────────────────────── */
+
+.light-leak {
+  position: fixed;
+  width: 80vw;
+  height: 80vw;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.08), transparent 60%);
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+:root.light .light-leak {
+  opacity: 0.25;
+}
+
+/* ── Bento Luxe Cards ────────────────────────────────────────────────────── */
+
+.bento-luxe {
+  @apply relative overflow-hidden rounded-[2rem] md:rounded-[40px] p-6 sm:p-8 md:p-10 transition-all duration-700;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-card);
+}
+
+.bento-luxe:hover {
+  box-shadow: 0 30px 60px -15px rgba(0,0,0,0.15);
+}
+
+:root.light .bento-luxe:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* ── HUD Panel ───────────────────────────────────────────────────────────── */
+
+.hud-panel {
+  @apply border-l backdrop-blur-md;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(to left, rgba(212, 175, 55, 0.05), rgba(255, 255, 255, 0.03), transparent);
+  box-shadow: -20px 0 50px -10px rgba(0, 0, 0, 0.8);
+}
+
+:root.light .hud-panel {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to left, rgba(212, 175, 55, 0.06), rgba(255, 255, 255, 0.4), transparent);
+  box-shadow: -10px 0 30px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* ── Kinetic & High-Contrast Buttons ────────────────────────────────────── */
+
+.btn-kinetic {
+  @apply relative px-10 py-5 overflow-hidden rounded-full font-bold uppercase tracking-[0.3em] text-[10px] transition-all duration-500 inline-flex items-center justify-center;
+  border: 1px solid var(--border-card);
+  color: var(--fg-page);
+  text-decoration: none;
+  cursor: none;
+}
+
+.btn-kinetic:hover {
+  border-color: var(--color-gold-leaf);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+}
+
+.btn-kinetic::before {
+  content: '';
+  @apply absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none;
+  background: var(--fg-page);
+}
+
+.btn-kinetic:hover::before {
+  opacity: 0.05;
+}
+
+/* ── STRICT CONTRAST ENFORCEMENT FOR WHITE / LIGHT PILL BUTTONS ─────────── */
+/* Ensures button text is 100% visible, bold, and high-contrast in every theme */
+
+.btn-kinetic.bg-white,
+.btn-kinetic.bg-\[var\(--fg-page\)\],
+.btn-magnetic.bg-white,
+.btn-magnetic.bg-\[var\(--fg-page\)\],
+button.bg-white,
+button.bg-\[var\(--fg-page\)\],
+a.btn-kinetic.bg-white,
+a.btn-kinetic.bg-\[var\(--fg-page\)\] {
+  color: #000000 !important;
+  background-color: #FFFFFF !important;
+}
+
+.btn-kinetic.bg-white *,
+.btn-kinetic.bg-\[var\(--fg-page\)\] *,
+.btn-magnetic.bg-white *,
+.btn-magnetic.bg-\[var\(--fg-page\)\] *,
+button.bg-white *,
+button.bg-\[var\(--fg-page\)\] *,
+a.btn-kinetic.bg-white *,
+a.btn-kinetic.bg-\[var\(--fg-page\)\] * {
+  color: #000000 !important;
+}
+
+.btn-kinetic.bg-white:hover,
+.btn-kinetic.bg-\[var\(--fg-page\)\]:hover,
+button.bg-white:hover,
+button.bg-\[var\(--fg-page\)\]:hover,
+a.btn-kinetic.bg-white:hover,
+a.btn-kinetic.bg-\[var\(--fg-page\)\]:hover {
+  color: #000000 !important;
+  background-color: var(--color-gold-leaf) !important;
+  border-color: var(--color-gold-leaf) !important;
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.45) !important;
+}
+
+.btn-kinetic.bg-white:hover *,
+.btn-kinetic.bg-\[var\(--fg-page\)\]:hover *,
+button.bg-white:hover *,
+button.bg-\[var\(--fg-page\)\]:hover * {
+  color: #000000 !important;
+}
+
+/* ── Hardware Acceleration Helpers (GSAP Performance) ──────────────────── */
+.gpu-accelerated,
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ── Text Reveal ─────────────────────────────────────────────────────────── */
+
+.text-reveal-mask {
+  clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  animation: reveal 2s var(--ease-ultra) forwards;
+}
+
+@keyframes reveal {
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+/* ── Glass Card ──────────────────────────────────────────────────────────── */
+
+.glass-card {
+  @apply relative overflow-hidden rounded-[2rem] transition-all duration-500;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-card:hover {
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+/* ── Theme-aware Input ───────────────────────────────────────────────────── */
+
+.theme-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  color: var(--fg-page);
+  transition: border-color 0.3s ease;
+}
+
+.theme-input::placeholder {
+  color: var(--fg-muted);
+}
+
+.theme-input:focus {
+  border-color: rgba(212, 175, 55, 0.5);
+  outline: none;
+}
+
+/* ── Magnetic Button ─────────────────────────────────────────────────────── */
+
+.btn-magnetic {
+  @apply relative overflow-hidden transition-all duration-500;
+}
+
+/* ── Organic Noise Overlay ───────────────────────────────────────────────── */
+
+.organic-noise {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+/* ── Liquid Background ───────────────────────────────────────────────────── */
+
+.liquid-bg {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+:root.light .liquid-bg {
+  background: radial-gradient(ellipse at 20% 50%, rgba(212, 175, 55, 0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(0, 0, 0, 0.01) 0%, transparent 50%);
+}
+
+/* ── Theme Toggle Button ─────────────────────────────────────────────────── */
+
+.theme-toggle-btn {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 100;
+  padding: 0.65rem;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  transition: border-color 0.3s ease, background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+}
+
+.theme-toggle-btn:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+}
