@@ -435,8 +435,8 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
 
             // 3. Compute and smooth angle
             const jointIndices = config.joints[side];
-            const jointsVisibilty = jointIndices.every((i) => (lm[i]?.visibility ?? 0) >= 0.5);
-            if(!joinstVisible){
+            const jointsVisible = jointIndices.every((i) => (lm[i]?.visibility ?? 0) >= 0.5);
+            if(!jointsVisible){
               setFeedback("Move into the camera view ");
               canvasCtx.restore();
               return;
@@ -577,7 +577,8 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
               if (nextSet >= targetSets) {
                 setFeedback("Session Complete");
                 speakFeedback("Excellent work! Session complete.");
-                void saveWorkout();}else{
+                void saveWorkout();
+              } else {
                 stateRef.current.setCount = nextSet;
                  
                 stateRef.current.repCount = 0;
@@ -585,7 +586,7 @@ const PostureCorrector = ({ exercise, onComplete, onClose }: { exercise: any, on
                 setUiRepCount(0);
                 setIsRestingState(true);
                 }
-                setTimeout(onComplete, 2000);
+                
               
             }
           } else {
